@@ -38,10 +38,22 @@ jobs:
           fi
       - name: checkout repository
         uses: actions/checkout@v2
+      - name: Run KICS scan on Terraform
+        uses: checkmarx/kics-action@v1.7.0
+        with:
+          path: infrastructure/terraform
+          fail_on: high
+          output_path: kics-results
+      - name: Upload KICS scan results
+        uses: actions/upload-artifact@v3
+        with:
+          name: kics-results
+          path: kics-results
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.5.0
+          path: infrastructure/terraform
       - name: Run terraform
         run: |
           cd infrastructure/terraform
