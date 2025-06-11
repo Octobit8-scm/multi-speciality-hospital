@@ -93,6 +93,60 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
   depends_on = [aws_ecr_repository.msh-ecr-repo]
 }
 
+resource "aws_lb" "msh-alb" {
+  name               = "msh-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.msh-public-sg.id]
+  subnets            = [aws_subnet.msh-public.id]
+
+  tags = {
+    Name        = "msh-alb"
+    Environment = "development"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "application-load-balancer"
+  }
+}
+
+resource "aws_lb_target_group" "msh-alb-tg" {
+  name     = "msh-alb-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.msh.id
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200-399"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+
+  tags = {
+    Name        = "msh-alb-tg"
+    Environment = "development"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "alb-target-group"
+  }
+}
+
+resource "aws_lb_listener" "msh-alb-listener" {
+  load_balancer_arn = aws_lb.msh-alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.msh-alb-tg.arn
+  }
+}
+
 resource "aws_ecs_service" "msh-ecs-service" {
   # This resource creates an ECS service for the Multi-Speciality Hospital project
   # It runs the ECS task on the specified cluster and subnets
@@ -108,6 +162,12 @@ resource "aws_ecs_service" "msh-ecs-service" {
     assign_public_ip = true
   }
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.msh-alb-tg.arn
+    container_name   = "msh-container"
+    container_port   = 80
+  }
+
   tags = {
     Name        = "msh-ecs-service"
     Environment = "development"
@@ -117,7 +177,7 @@ resource "aws_ecs_service" "msh-ecs-service" {
     Type        = "ecs-service"
   }
   # The ECS service is dependent on the ECS cluster and task definition being created
-  depends_on = [aws_ecs_cluster.msh-ecs-cluster, aws_ecs_task_definition.msh-ecs-task]
+  depends_on = [aws_lb_listener.msh-alb-listener, aws_ecs_cluster.msh-ecs-cluster, aws_ecs_task_definition.msh-ecs-task]
   # The service will run the task in the public subnet with the specified security group
   # This allows the service to be accessible from the internet
   # The security group allows inbound traffic on port 80 (HTTP) from anywhere
