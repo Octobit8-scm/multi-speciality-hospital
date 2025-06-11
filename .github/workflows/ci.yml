@@ -38,3 +38,31 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       MSH_TERRAFORM_STATE_BUCKET: ${{ secrets.MSH_TERRAFORM_STATE_BUCKET }}
+
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    needs: terraform-pipeline
+    environment: development
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Get ECR repository URI
+        id: ecr-uri
+        run: |
+          URI=$(aws ecr describe-repositories --repository-names msh-ecr-repo --region us-east-1 --query 'repositories[0].repositoryUri' --output text)
+          echo "ECR_URI=$URI" >> $GITHUB_ENV
+      - name: Build Docker image
+        run: |
+          docker build -t $ECR_URI:latest .
+      - name: Push Docker image to ECR
+        run: |
+          docker push $ECR_URI:latest
