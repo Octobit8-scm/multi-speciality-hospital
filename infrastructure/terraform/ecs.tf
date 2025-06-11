@@ -109,7 +109,7 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
 
 # kics-scan ignore-block
 resource "aws_lb" "msh_alb" {
-  name                       = "msh_alb"
+  name                       = "msh-alb"
   internal                   = false
   load_balancer_type         = "application"
   security_groups            = [aws_security_group.msh_public_sg.id]
@@ -117,7 +117,7 @@ resource "aws_lb" "msh_alb" {
   enable_deletion_protection = true
   drop_invalid_header_fields = true
   tags = {
-    Name        = "msh_alb"
+    Name        = "msh-alb"
     Environment = "development"
     project     = "multi_speciality_hospital"
     owner       = "devops_team"
@@ -156,7 +156,7 @@ resource "aws_lb_target_group" "msh-alb-tg" {
 
 # kics-scan ignore-block
 resource "aws_lb_listener" "msh-alb-listener" {
-  load_balancer_arn = aws_lb.msh-alb.arn
+  load_balancer_arn = aws_lb.msh_alb.arn
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
