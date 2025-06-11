@@ -127,7 +127,13 @@ resource "aws_security_group" "msh-public-sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"] # Allow HTTP traffic from the public subnet
+    cidr_blocks = ["0.0.0.0/0"] # Allow HTTP traffic from anywhere
+  }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Allow HTTPS traffic from anywhere
   }
   ingress {
     from_port   = 22
