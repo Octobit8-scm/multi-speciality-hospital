@@ -45,7 +45,7 @@ jobs:
           fail_on: high
           output_path: kics-results
       - name: Upload KICS scan results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kics-results
           path: kics-results
