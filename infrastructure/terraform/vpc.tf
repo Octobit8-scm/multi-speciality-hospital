@@ -124,27 +124,31 @@ resource "aws_security_group" "msh-public-sg" {
   vpc_id = aws_vpc.msh.id
 
   ingress {
+    description = "Allow HTTP from anywhere"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Allow HTTP traffic from anywhere
   }
   ingress {
+    description = "Allow HTTPS from anywhere"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Allow HTTPS traffic from anywhere
   }
   ingress {
+    description = "Allow SSH from public subnet"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["10.0.1.0/24"] # Allow SSH traffic from the public subnet
   }
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"          # Allow all outbound traffic
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"] # Allow all outbound traffic
   }
   tags = {
