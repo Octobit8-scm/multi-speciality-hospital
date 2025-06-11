@@ -200,7 +200,7 @@ resource "aws_iam_role_policy_attachment" "vpc_flow_log_role_attachment" {
 resource "aws_networkfirewall_firewall_policy" "msh_nfw_policy" {
   name = "msh_nfw_policy"
   firewall_policy {
-    stateless_default_actions = ["aws:forward_to_sfe"]
+    stateless_default_actions          = ["aws:forward_to_sfe"]
     stateless_fragment_default_actions = ["aws:forward_to_sfe"]
     stateful_rule_group_reference {
       resource_arn = aws_networkfirewall_rule_group.msh_nfw_rule_group.arn
@@ -222,7 +222,9 @@ resource "aws_networkfirewall_rule_group" "msh_nfw_rule_group" {
   type     = "STATEFUL"
   rule_group {
     rules_source {
-      rules_string = "pass tcp any any -> any any (sid:1; rev:1;)
+      rules_string = <<EOF
+pass tcp any any -> any any (sid:1; rev:1;)
+EOF
     }
   }
   tags = {
