@@ -2,10 +2,6 @@ name: multi-speciality-hospital infrastructure CI
 
 on:
   workflow_call:
-  push:
-    branches: ["master", "development", "MSH*"]
-  pull_request:
-    branches: ["master", "development"]
 
 jobs:
   terraform:
