@@ -25,12 +25,6 @@ jobs:
       - name: Terraform initialize
         run: terraform init
       - name: terraform plan
-        run: terraform plan -out=tfplan
+        run: terraform plan
       - name: Terraform apply
-        run: terraform apply -auto-approve tfplan
-      - name: Terraform output
-        run: terraform output -json > output.json
-      - name: Upload Terraform output
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-output
+        run: terraform apply -auto-approve
