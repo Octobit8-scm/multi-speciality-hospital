@@ -173,14 +173,14 @@ resource "aws_ecs_service" "msh-ecs-service" {
   # This resource creates an ECS service for the Multi-Speciality Hospital project
   # It runs the ECS task on the specified cluster and subnets
   name            = "msh-ecs-service"
-  cluster         = aws_ecs_cluster.msh-ecs-cluster.id
+  cluster         = aws_ecs_cluster.msh_ecs_cluster.id
   task_definition = aws_ecs_task_definition.msh-ecs-task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
     subnets          = [aws_subnet.msh-public.id]
-    security_groups  = [aws_security_group.msh-public-sg.id]
+    security_groups  = [aws_security_group.msh_public_sg.id]
     assign_public_ip = true
   }
 
@@ -199,7 +199,7 @@ resource "aws_ecs_service" "msh-ecs-service" {
     Type        = "ecs-service"
   }
   # The ECS service is dependent on the ECS cluster and task definition being created
-  depends_on = [aws_lb_listener.msh-alb-listener, aws_ecs_cluster.msh-ecs-cluster, aws_ecs_task_definition.msh-ecs-task]
+  depends_on = [aws_lb_listener.msh-alb-listener, aws_ecs_cluster.msh_ecs_cluster, aws_ecs_task_definition.msh-ecs-task]
   # The service will run the task in the public subnet with the specified security group
   # This allows the service to be accessible from the internet
   # The security group allows inbound traffic on port 80 (HTTP) from anywhere
