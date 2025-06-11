@@ -24,13 +24,8 @@ jobs:
           terraform_version: 1.5.0
       - name: change directory to terraform
         run: cd infrastructure/terraform
-      - name: Terraform format
-        run: terraform fmt -check
-      - name: Terraform validate
-        run: terraform validate
-      - name: Terraform initialize
-        run: terraform init
-      - name: terraform plan
-        run: terraform plan
-      - name: Terraform apply
-        run: terraform apply -auto-approve
+          terraform fmt -check
+          terraform validate
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
