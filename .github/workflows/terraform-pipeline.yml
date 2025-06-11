@@ -1,3 +1,11 @@
+name: multi-speciality-hospital infrastructure CI
+
+on:
+  push:
+    branches: ["development"]
+  pull_request:
+    branches: ["development"]
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
