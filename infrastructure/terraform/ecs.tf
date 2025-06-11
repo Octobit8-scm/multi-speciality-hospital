@@ -1,8 +1,3 @@
-variable "alb_certificate_arn" {
-  description = "The ARN of the ACM certificate for the ALB HTTPS listener."
-  type        = string
-}
-
 resource "aws_ecr_repository" "msh-ecr-repo" {
   # This resource creates an ECR repository for the Multi-Speciality Hospital project
   # It is used to store Docker images for the ECS services

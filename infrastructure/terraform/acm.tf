@@ -1,13 +1,3 @@
-variable "alb_domain_name" {
-  description = "The domain name for the ALB ACM certificate."
-  type        = string
-}
-
-variable "route53_zone_id" {
-  description = "The Route53 Hosted Zone ID for the domain."
-  type        = string
-}
-
 resource "aws_acm_certificate" "msh_alb_cert" {
   domain_name       = var.alb_domain_name
   validation_method = "DNS"
