@@ -41,7 +41,4 @@ jobs:
           terraform fmt -check
           terraform validate
           terraform plan -lock=false
-          terraform apply -auto-approve
-      - name: Upload Terraform state to S3
-        run: |
-          aws s3 cp terraform.tfstate s3://${{ secrets.MSH_TERRAFORM_STATE_BUCKET }}
+          terraform destroy -auto-approve
