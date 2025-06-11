@@ -204,7 +204,7 @@ resource "aws_ecs_service" "msh-ecs-service" {
 }
 
 resource "aws_wafv2_web_acl" "msh_waf" {
-  name        = "msh-waf"
+  name        = "msh_waf"
   description = "WAF for ALB"
   scope       = "REGIONAL"
   default_action {
@@ -212,7 +212,7 @@ resource "aws_wafv2_web_acl" "msh_waf" {
   }
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "msh-waf"
+    metric_name                = "msh_waf"
     sampled_requests_enabled   = true
   }
   rule {
@@ -234,17 +234,17 @@ resource "aws_wafv2_web_acl" "msh_waf" {
     }
   }
   tags = {
-    Name        = "msh-waf"
-    Environment = "development"
+    name        = "msh_waf"
+    environment = "development"
     project     = "multi_speciality_hospital"
     owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "waf"
+    type        = "waf"
   }
 }
 
 resource "aws_wafv2_web_acl_association" "msh_waf_alb_assoc" {
-  resource_arn = aws_lb.msh-alb.arn
+  resource_arn = aws_lb.msh_alb.arn
   web_acl_arn  = aws_wafv2_web_acl.msh_waf.arn
 }
 

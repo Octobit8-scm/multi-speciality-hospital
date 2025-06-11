@@ -39,11 +39,11 @@ resource "aws_kms_key" "cw_logs" {
 }
 EOF
   tags = {
-    Name        = "cw_logs_kms_key"
-    Environment = "development"
+    name        = "cw_logs_kms_key"
+    environment = "development"
     project     = "multi_speciality_hospital"
     owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "kms_key"
+    type        = "kms_key"
   }
 }
