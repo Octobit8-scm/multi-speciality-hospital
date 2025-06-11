@@ -120,7 +120,7 @@ resource "aws_route_table_association" "msh-private-rt-assoc" {
   depends_on     = [aws_route_table.msh-private-rt]
 }
 
-resource "aws_security_group" "msh-public-sg" {
+resource "aws_security_group" "msh_public_sg" {
   vpc_id = aws_vpc.msh.id
 
   ingress {
@@ -128,37 +128,130 @@ resource "aws_security_group" "msh-public-sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allow HTTP traffic from anywhere
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "Allow HTTPS from anywhere"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allow HTTPS traffic from anywhere
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "Allow SSH from public subnet"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"] # Allow SSH traffic from the public subnet
+    cidr_blocks = ["10.0.1.0/24"]
   }
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"] # Allow all outbound traffic
+    cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name        = "msh-public-sg"
+    Name        = "msh_public_sg"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "public-security-group"
+    Type        = "public_security_group"
   }
   depends_on = [aws_vpc.msh]
+}
+
+resource "aws_flow_log" "vpc_flow_log" {
+  log_destination_type = "cloud-watch-logs"
+  log_group_name       = aws_cloudwatch_log_group.ecs_log_group.name
+  iam_role_arn         = aws_iam_role.vpc_flow_log_role.arn
+  vpc_id               = aws_vpc.msh.id
+  traffic_type         = "ALL"
+  tags = {
+    Name        = "vpc_flow_log"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "vpc_flow_log"
+  }
+}
+
+resource "aws_iam_role" "vpc_flow_log_role" {
+  name = "vpc_flow_log_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "vpc-flow-logs.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_flow_log_role_attachment" {
+  role       = aws_iam_role.vpc_flow_log_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+}
+
+resource "aws_networkfirewall_firewall_policy" "msh_nfw_policy" {
+  name = "msh_nfw_policy"
+  firewall_policy {
+    stateless_default_actions = ["aws:forward_to_sfe"]
+    stateless_fragment_default_actions = ["aws:forward_to_sfe"]
+    stateful_rule_group_reference {
+      resource_arn = aws_networkfirewall_rule_group.msh_nfw_rule_group.arn
+    }
+  }
+  tags = {
+    Name        = "msh_nfw_policy"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "network_firewall_policy"
+  }
+}
+
+resource "aws_networkfirewall_rule_group" "msh_nfw_rule_group" {
+  capacity = 100
+  name     = "msh_nfw_rule_group"
+  type     = "STATEFUL"
+  rule_group {
+    rules_source {
+      rules_string = "pass tcp any any -> any any (sid:1; rev:1;)
+    }
+  }
+  tags = {
+    Name        = "msh_nfw_rule_group"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "network_firewall_rule_group"
+  }
+}
+
+resource "aws_networkfirewall_firewall" "msh_nfw" {
+  name                = "msh_nfw"
+  firewall_policy_arn = aws_networkfirewall_firewall_policy.msh_nfw_policy.arn
+  vpc_id              = aws_vpc.msh.id
+  subnet_mapping {
+    subnet_id = aws_subnet.msh-public.id
+  }
+  subnet_mapping {
+    subnet_id = aws_subnet.msh-public-2.id
+  }
+  tags = {
+    Name        = "msh_nfw"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "network_firewall"
+  }
 }
 

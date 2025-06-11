@@ -1,49 +1,59 @@
-resource "aws_ecr_repository" "msh-ecr-repo" {
+resource "aws_ecr_repository" "msh_ecr_repo" {
   # This resource creates an ECR repository for the Multi-Speciality Hospital project
   # It is used to store Docker images for the ECS services
-  name                 = "msh-ecr-repo"
-  image_tag_mutability = "MUTABLE"
+  name                 = "msh_ecr_repo"
+  image_tag_mutability = "IMMUTABLE"
   # Setting image_tag_mutability to "MUTABLE" allows overwriting images with the same tag
-  tags = {
-    Name        = "msh-ecr-repo"
-    Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
-    email       = "abhishek.srivastava@octobit8.com"
-    Type        = "ecr-repository"
+  encryption_configuration {
+    encryption_type = "KMS"
+    kms_key         = aws_kms_key.ecr.arn
   }
   # Enabling image scanning on push to ensure security best practices
   # This will scan images for vulnerabilities when they are pushed to the repository
-  depends_on = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
   image_scanning_configuration {
     scan_on_push = true
   }
+  tags = {
+    Name        = "msh_ecr_repo"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "ecr_repository"
+  }
+  # The ECR repository is dependent on the VPC and subnets being created
+  depends_on = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
 }
 
 resource "aws_cloudwatch_log_group" "ecs_log_group" {
   name              = "/ecs/msh-ecs-cluster"
   retention_in_days = 14
+  kms_key_id        = aws_kms_key.cw_logs.arn
   tags = {
-    Name        = "msh-ecs-log-group"
+    Name        = "msh_ecs_log_group"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "cloudwatch-log-group"
+    Type        = "cloudwatch_log_group"
   }
 }
 
-resource "aws_ecs_cluster" "msh-ecs-cluster" {
+resource "aws_ecs_cluster" "msh_ecs_cluster" {
   # This resource creates an ECS cluster for the Multi-Speciality Hospital project
   # It is used to manage and run containerized applications
-  name = "msh-ecs-cluster"
+  name = "msh_ecs_cluster"
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
   tags = {
-    Name        = "msh-ecs-cluster"
+    Name        = "msh_ecs_cluster"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "ecs-cluster"
+    Type        = "ecs_cluster"
   }
   # The ECS cluster is dependent on the VPC and subnets being created
   depends_on = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
@@ -61,7 +71,7 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
   container_definitions = jsonencode([
     {
       name      = "msh-container"
-      image     = "${aws_ecr_repository.msh-ecr-repo.repository_url}:latest"
+      image     = "${aws_ecr_repository.msh_ecr_repo.repository_url}:latest"
       essential = true
       portMappings = [
         {
@@ -84,29 +94,30 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
   tags = {
     Name        = "msh-ecs-task"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-task-definition"
   }
   # The ECS task definition is dependent on the ECR repository being created
-  depends_on = [aws_ecr_repository.msh-ecr-repo]
+  depends_on = [aws_ecr_repository.msh_ecr_repo]
 }
 
-resource "aws_lb" "msh-alb" {
-  name               = "msh-alb"
+resource "aws_lb" "msh_alb" {
+  name               = "msh_alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.msh-public-sg.id]
+  security_groups    = [aws_security_group.msh_public_sg.id]
   subnets            = [aws_subnet.msh-public.id, aws_subnet.msh-public-2.id]
-
+  enable_deletion_protection = true
+  drop_invalid_header_fields = true
   tags = {
-    Name        = "msh-alb"
+    Name        = "msh_alb"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "application-load-balancer"
+    Type        = "application_load_balancer"
   }
 }
 
@@ -130,8 +141,8 @@ resource "aws_lb_target_group" "msh-alb-tg" {
   tags = {
     Name        = "msh-alb-tg"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "alb-target-group"
   }
@@ -174,8 +185,8 @@ resource "aws_ecs_service" "msh-ecs-service" {
   tags = {
     Name        = "msh-ecs-service"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-service"
   }
@@ -225,8 +236,8 @@ resource "aws_wafv2_web_acl" "msh_waf" {
   tags = {
     Name        = "msh-waf"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "waf"
   }
@@ -235,6 +246,52 @@ resource "aws_wafv2_web_acl" "msh_waf" {
 resource "aws_wafv2_web_acl_association" "msh_waf_alb_assoc" {
   resource_arn = aws_lb.msh-alb.arn
   web_acl_arn  = aws_wafv2_web_acl.msh_waf.arn
+}
+
+resource "aws_kms_key" "ecr" {
+  description             = "KMS key for ECR encryption"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+  tags = {
+    Name        = "ecr_kms_key"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "kms_key"
+  }
+}
+
+resource "aws_ecr_repository_policy" "msh_ecr_repo_policy" {
+  repository = aws_ecr_repository.msh_ecr_repo.name
+  policy     = data.aws_iam_policy_document.ecr_policy.json
+}
+
+data "aws_iam_policy_document" "ecr_policy" {
+  statement {
+    sid    = "AllowPushPull"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload",
+      "ecr:DescribeRepositories",
+      "ecr:GetRepositoryPolicy",
+      "ecr:ListImages",
+      "ecr:DeleteRepository",
+      "ecr:BatchDeleteImage",
+      "ecr:SetRepositoryPolicy",
+      "ecr:DeleteRepositoryPolicy"
+    ]
+  }
 }
 
 

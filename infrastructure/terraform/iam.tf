@@ -28,3 +28,16 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
+resource "aws_accessanalyzer_analyzer" "main" {
+  analyzer_name = "main"
+  type          = "ACCOUNT"
+  tags = {
+    Name        = "main_access_analyzer"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "access_analyzer"
+  }
+}
