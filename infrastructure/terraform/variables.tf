@@ -8,7 +8,8 @@ variable "route53_zone_id" {
   type        = string
 }
 
-variable "alb_certificate_arn" {
-  description = "The ARN of the ACM certificate for the ALB HTTPS listener."
-  type        = string
-}
+# Removed alb_certificate_arn variable, as we now use the data source for ACM cert
+# variable "alb_certificate_arn" {
+#   description = "The ARN of the ACM certificate for the ALB HTTPS listener."
+#   type        = string
+# }
