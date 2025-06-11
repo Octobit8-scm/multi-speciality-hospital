@@ -13,7 +13,7 @@
 #   }
 # }
 
-data "aws_acm_certificate" "msh_alb_cert" {
-  domain      = var.alb_domain_name
-  most_recent = true
-}
+# data "aws_acm_certificate" "msh_alb_cert" {
+#   domain      = var.alb_domain_name
+#   most_recent = true
+# }
