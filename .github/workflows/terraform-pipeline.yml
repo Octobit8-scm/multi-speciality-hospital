@@ -49,7 +49,7 @@ jobs:
       #   with:
       #     name: kics-results
       #     path: kics-results
-      # - name: Set up Terraform
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.5.0
