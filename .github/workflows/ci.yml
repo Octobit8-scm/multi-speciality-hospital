@@ -5,6 +5,7 @@ on:
     branches: ["development", "MSH*"]
   pull_request:
     branches: ["development"]
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
@@ -24,9 +25,15 @@ jobs:
       - run: npm run build --if-present
       - run: npm test
 
+  sonar-analysis:
+    uses: ./.github/workflows/sonar-analysis.yml
+    needs: build
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   terraform-pipeline:
     uses: ./.github/workflows/terraform-pipeline.yml
-    needs: build
+    needs: sonar-analysis
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
