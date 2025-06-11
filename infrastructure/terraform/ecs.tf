@@ -189,6 +189,51 @@ resource "aws_ecs_service" "msh-ecs-service" {
   }
 }
 
+resource "aws_wafv2_web_acl" "msh_waf" {
+  name        = "msh-waf"
+  description = "WAF for ALB"
+  scope       = "REGIONAL"
+  default_action {
+    allow {}
+  }
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "msh-waf"
+    sampled_requests_enabled   = true
+  }
+  rule {
+    name     = "AWS-AWSManagedRulesCommonRuleSet"
+    priority = 1
+    override_action {
+      none {}
+    }
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedRulesCommonRuleSet"
+      sampled_requests_enabled   = true
+    }
+  }
+  tags = {
+    Name        = "msh-waf"
+    Environment = "development"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "waf"
+  }
+}
+
+resource "aws_wafv2_web_acl_association" "msh_waf_alb_assoc" {
+  resource_arn = aws_lb.msh-alb.arn
+  web_acl_arn  = aws_wafv2_web_acl.msh_waf.arn
+}
+
 
 
 
