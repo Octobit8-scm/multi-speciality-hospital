@@ -25,7 +25,7 @@ resource "aws_kms_key" "cw_logs" {
       "Resource": "*"
     },
     {
-      "Sid": "AllowAccountAdmin",
+      "Sid": "AllowAccountAdminReadOnly",
       "Effect": "Allow",
       "Principal": {"AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"},
       "Action": [
