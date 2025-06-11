@@ -33,5 +33,5 @@ jobs:
           terraform init
           terraform fmt -check
           terraform validate
-          terraform plan
+          terraform plan -lock=false
           terraform apply -auto-approve
