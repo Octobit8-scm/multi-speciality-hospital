@@ -111,10 +111,11 @@ resource "aws_lb" "msh-alb" {
 }
 
 resource "aws_lb_target_group" "msh-alb-tg" {
-  name     = "msh-alb-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.msh.id
+  name        = "msh-alb-tg"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.msh.id
+  target_type = "ip"
 
   health_check {
     path                = "/"
