@@ -2,9 +2,9 @@ name: multi-speciality-hospital infrastructure CI
 
 on:
   push:
-    branches: ["development", "MSH*"]
+    branches: ["master", "development", "MSH*"]
   pull_request:
-    branches: ["development"]
+    branches: ["master", "development"]
 
 jobs:
   terraform:
@@ -22,6 +22,12 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.5.0
+      - name: change directory to terraform
+        run: cd infrastructure/terraform
+      - name: Terraform format
+        run: terraform fmt -check
+      - name: Terraform validate
+        run: terraform validate
       - name: Terraform initialize
         run: terraform init
       - name: terraform plan
