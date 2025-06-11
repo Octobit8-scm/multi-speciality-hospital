@@ -1,3 +1,5 @@
+[![multi-speciality-hospital infrastructure CI](https://github.com/Octobit8-scm/multi-speciality-hospital/actions/workflows/terraform-pipeline.yml/badge.svg?branch=MSH-1-Setup-local-development-environment-for-CI-CD-automation)](https://github.com/Octobit8-scm/multi-speciality-hospital/actions/workflows/terraform-pipeline.yml)
+
 # multi-speciality-hospital Hospital Website
 
 A modern, responsive website for multi-speciality-hospital Hospital built with Next.js, TypeScript, and Tailwind CSS.
