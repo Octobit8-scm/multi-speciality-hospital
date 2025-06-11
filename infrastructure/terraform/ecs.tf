@@ -98,7 +98,7 @@ resource "aws_lb" "msh-alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.msh-public-sg.id]
-  subnets            = [aws_subnet.msh-public.id]
+  subnets            = [aws_subnet.msh-public.id, aws_subnet.msh-public-2.id]
 
   tags = {
     Name        = "msh-alb"

@@ -28,6 +28,21 @@ resource "aws_subnet" "msh-public" {
   }
 }
 
+resource "aws_subnet" "msh-public-2" {
+  vpc_id                  = aws_vpc.msh.id
+  cidr_block              = "10.0.3.0/24" # Second public subnet in 10.0.0.0/16
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = true
+  tags = {
+    Name        = "msh-public-subnet-2"
+    Environment = "development"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "public"
+  }
+}
+
 resource "aws_subnet" "msh-private" {
   vpc_id            = aws_vpc.msh.id
   cidr_block        = "10.0.2.0/24" # Private subnet in 10.0.0.0/16
@@ -77,6 +92,12 @@ resource "aws_route_table" "msh-public-rt" {
 
 resource "aws_route_table_association" "msh-public-rt-assoc" {
   subnet_id      = aws_subnet.msh-public.id
+  route_table_id = aws_route_table.msh-public-rt.id
+  depends_on     = [aws_route_table.msh-public-rt]
+}
+
+resource "aws_route_table_association" "msh-public-rt-assoc-2" {
+  subnet_id      = aws_subnet.msh-public-2.id
   route_table_id = aws_route_table.msh-public-rt.id
   depends_on     = [aws_route_table.msh-public-rt]
 }
