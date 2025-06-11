@@ -21,13 +21,17 @@ jobs:
           BUCKET_NAME: ${{ secrets.MSH_TERRAFORM_STATE_BUCKET }}
         run: |
           aws s3api create-bucket --bucket ${{ env.BUCKET_NAME }} --region us-east-1
+      - name: Create DynamoDB table for terraform state locking
+        run: |
+          aws dynamodb create-table \
+          --table-name msh-terraform-lock-table-dev
       - name: checkout repository
         uses: actions/checkout@v2
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.5.0
-      - name: change directory to terraform
+      - name: Run terraform
         run: |
           cd infrastructure/terraform
           terraform init
@@ -35,3 +39,4 @@ jobs:
           terraform validate
           terraform plan -lock=false
           terraform apply -auto-approve
+      - name: Select terraform workspace

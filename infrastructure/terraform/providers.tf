@@ -17,6 +17,6 @@ terraform {
     bucket         = "msh-terraform-state-dev"
     key            = "terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "msh-terraform-lock"
+    dynamodb_table = "msh-terraform-lock-table-dev"
   }
 }
