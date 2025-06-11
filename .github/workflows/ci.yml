@@ -2,7 +2,7 @@ name: multi-speciality-hospital CI
 
 on:
   push:
-    branches: ["development"]
+    branches: ["development", "MSH*"]
   pull_request:
     branches: ["development"]
 
