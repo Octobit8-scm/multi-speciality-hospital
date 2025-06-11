@@ -20,6 +20,19 @@ resource "aws_ecr_repository" "msh-ecr-repo" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name              = "/ecs/msh-ecs-cluster"
+  retention_in_days = 14
+  tags = {
+    Name        = "msh-ecs-log-group"
+    Environment = "development"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "cloudwatch-log-group"
+  }
+}
+
 resource "aws_ecs_cluster" "msh-ecs-cluster" {
   # This resource creates an ECS cluster for the Multi-Speciality Hospital project
   # It is used to manage and run containerized applications
@@ -57,6 +70,14 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
           protocol      = "tcp"
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
+          awslogs-region        = "us-east-1"
+          awslogs-stream-prefix = "ecs"
+        }
+      }
     }
   ])
 
