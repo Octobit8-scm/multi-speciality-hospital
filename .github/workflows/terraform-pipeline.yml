@@ -2,6 +2,13 @@ name: multi-speciality-hospital infrastructure CI
 
 on:
   workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      MSH_TERRAFORM_STATE_BUCKET:
+        required: true
 
 jobs:
   terraform:
