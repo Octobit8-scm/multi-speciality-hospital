@@ -1,3 +1,8 @@
+variable "alb_certificate_arn" {
+  description = "The ARN of the ACM certificate for the ALB HTTPS listener."
+  type        = string
+}
+
 resource "aws_ecr_repository" "msh-ecr-repo" {
   # This resource creates an ECR repository for the Multi-Speciality Hospital project
   # It is used to store Docker images for the ECS services
@@ -138,8 +143,10 @@ resource "aws_lb_target_group" "msh-alb-tg" {
 
 resource "aws_lb_listener" "msh-alb-listener" {
   load_balancer_arn = aws_lb.msh-alb.arn
-  port              = 80
-  protocol          = "HTTP"
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.alb_certificate_arn
 
   default_action {
     type             = "forward"
