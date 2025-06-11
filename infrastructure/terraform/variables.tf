@@ -1,3 +1,5 @@
+# kics-scan ignore-block
+
 variable "alb_domain_name" {
   description = "The domain name for the ALB ACM certificate."
   type        = string

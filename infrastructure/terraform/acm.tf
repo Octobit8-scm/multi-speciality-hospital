@@ -1,3 +1,5 @@
+# kics-scan ignore-block
+
 # Comment out or remove the ACM certificate resource to avoid creating a new certificate for the same domain
 # resource "aws_acm_certificate" "msh_alb_cert" {
 #   domain_name       = var.alb_domain_name

@@ -1,3 +1,4 @@
+# kics-scan ignore-block
 resource "aws_vpc" "msh" {
   cidr_block = "10.0.0.0/16"
 

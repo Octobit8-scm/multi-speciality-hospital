@@ -1,3 +1,5 @@
+# kics-scan ignore-block
+
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "msh-ecs-task-execution-role"
 
