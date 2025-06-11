@@ -23,7 +23,8 @@ jobs:
         with:
           terraform_version: 1.5.0
       - name: change directory to terraform
-        run: cd infrastructure/terraform
+        run: |
+          cd infrastructure/terraform
           terraform fmt -check
           terraform validate
           terraform init
