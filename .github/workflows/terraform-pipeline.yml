@@ -49,4 +49,4 @@ jobs:
           terraform fmt -check
           terraform validate
           terraform plan -lock=false
-          terraform destroy -auto-approve
+          terraform apply -auto-approve
