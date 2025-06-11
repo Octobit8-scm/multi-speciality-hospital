@@ -104,11 +104,11 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
 }
 
 resource "aws_lb" "msh_alb" {
-  name               = "msh_alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.msh_public_sg.id]
-  subnets            = [aws_subnet.msh-public.id, aws_subnet.msh-public-2.id]
+  name                       = "msh_alb"
+  internal                   = false
+  load_balancer_type         = "application"
+  security_groups            = [aws_security_group.msh_public_sg.id]
+  subnets                    = [aws_subnet.msh-public.id, aws_subnet.msh-public-2.id]
   enable_deletion_protection = true
   drop_invalid_header_fields = true
   tags = {
