@@ -81,13 +81,6 @@ resource "aws_route_table_association" "msh-public-rt-assoc" {
   depends_on     = [aws_route_table.msh-public-rt]
 }
 
-resource "aws_internet_gateway_attachment" "msh-vpc-ig-attachment" {
-  vpc_id              = aws_vpc.msh.id
-  internet_gateway_id = aws_internet_gateway.msh-vpc-ig.id
-
-  depends_on = [aws_internet_gateway.msh-vpc-ig]
-}
-
 resource "aws_route_table" "msh-private-rt" {
   vpc_id = aws_vpc.msh.id
 
