@@ -13,6 +13,10 @@
 #   }
 # }
 
+data "aws_acm_certificate" "msh_alb_cert" {
+  arn = var.alb_certificate_arn
+}
+
 resource "aws_route53_record" "msh_alb_cert_validation" {
   for_each = {
     for dvo in data.aws_acm_certificate.msh_alb_cert.domain_validation_options : dvo.domain_name => {
