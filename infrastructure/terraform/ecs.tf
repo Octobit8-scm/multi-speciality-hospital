@@ -3,7 +3,7 @@
 resource "aws_ecr_repository" "msh_ecr_repo" {
   # This resource creates an ECR repository for the Multi-Speciality Hospital project
   # It is used to store Docker images for the ECS services
-  name                 = "msh_ecr_repo"
+  name                 = "msh-ecr-repo"
   image_tag_mutability = "IMMUTABLE"
   # Setting image_tag_mutability to "MUTABLE" allows overwriting images with the same tag
   encryption_configuration {
@@ -16,7 +16,7 @@ resource "aws_ecr_repository" "msh_ecr_repo" {
     scan_on_push = true
   }
   tags = {
-    Name        = "msh_ecr_repo"
+    Name        = "msh-ecr-repo"
     Environment = "development"
     project     = "multi_speciality_hospital"
     owner       = "devops_team"
