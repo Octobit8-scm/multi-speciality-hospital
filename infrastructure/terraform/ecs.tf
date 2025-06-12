@@ -160,8 +160,8 @@ resource "aws_lb_listener" "msh-alb-listener" {
   load_balancer_arn = aws_lb.msh_alb.arn
   port              = 80 # or 443 for HTTPS
   protocol          = "HTTP"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = var.alb_certificate_arn
+  #ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn = var.alb_certificate_arn
 
   default_action {
     type             = "forward"
