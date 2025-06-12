@@ -165,7 +165,7 @@ resource "aws_security_group" "msh_public_sg" {
 
 resource "aws_flow_log" "vpc_flow_log" {
   log_destination_type = "cloud-watch-logs"
-  log_group_name       = aws_cloudwatch_log_group.ecs_log_group.name
+  log_destination      = aws_cloudwatch_log_group.ecs_log_group.arn
   iam_role_arn         = aws_iam_role.vpc_flow_log_role.arn
   vpc_id               = aws_vpc.msh.id
   traffic_type         = "ALL"
@@ -219,7 +219,7 @@ resource "aws_networkfirewall_firewall_policy" "msh_nfw_policy" {
 
 resource "aws_networkfirewall_rule_group" "msh_nfw_rule_group" {
   capacity = 100
-  name     = "msh_nfw_rule_group"
+  name     = "msh-nfw-rule-group"
   type     = "STATEFUL"
   rule_group {
     rules_source {
@@ -229,7 +229,7 @@ EOF
     }
   }
   tags = {
-    Name        = "msh_nfw_rule_group"
+    Name        = "msh-nfw-rule-group"
     Environment = "development"
     project     = "multi_speciality_hospital"
     owner       = "devops_team"

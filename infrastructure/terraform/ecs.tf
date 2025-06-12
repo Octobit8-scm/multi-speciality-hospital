@@ -24,7 +24,8 @@ resource "aws_ecr_repository" "msh_ecr_repo" {
     Type        = "ecr_repository"
   }
   # The ECR repository is dependent on the VPC and subnets being created
-  depends_on = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
+  depends_on   = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
+  force_delete = true
 }
 
 # kics-scan ignore-block
