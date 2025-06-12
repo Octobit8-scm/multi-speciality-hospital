@@ -28,19 +28,19 @@ jobs:
   sonar-analysis:
     uses: ./.github/workflows/sonar-analysis.yml
     needs: build
-    # secrets:
-    #   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   infrastructure-pipeline:
     uses: ./.github/workflows/infrastructure-pipeline.yml
     needs: sonar-analysis
     with:
       destroy: false
-    # secrets:
-    #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #   MSH_TERRAFORM_STATE_BUCKET: ${{ secrets.MSH_TERRAFORM_STATE_BUCKET }}
-    #   MSH_TERRAFORM_STATE_LOCK_TABLE: ${{ secrets.MSH_TERRAFORM_STATE_LOCK_TABLE }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      MSH_TERRAFORM_STATE_BUCKET: ${{ secrets.MSH_TERRAFORM_STATE_BUCKET }}
+      MSH_TERRAFORM_STATE_LOCK_TABLE: ${{ secrets.MSH_TERRAFORM_STATE_LOCK_TABLE }}
 
   docker-build-and-push:
     runs-on: ubuntu-latest
