@@ -161,7 +161,7 @@ resource "aws_lb_listener" "msh-alb-listener" {
   port              = 80 # or 443 for HTTPS
   protocol          = "HTTP"
   #ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn = var.alb_certificate_arn
+  #certificate_arn = var.alb_certificate_arn
 
   default_action {
     type             = "forward"
