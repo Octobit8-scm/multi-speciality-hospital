@@ -4,7 +4,7 @@ resource "aws_ecr_repository" "msh_ecr_repo" {
   # This resource creates an ECR repository for the Multi-Speciality Hospital project
   # It is used to store Docker images for the ECS services
   name                 = "msh-ecr-repo"
-  image_tag_mutability = "IMMUTABLE"
+  image_tag_mutability = "MUTABLE"
   # Setting image_tag_mutability to "MUTABLE" allows overwriting images with the same tag
   encryption_configuration {
     encryption_type = "KMS"
