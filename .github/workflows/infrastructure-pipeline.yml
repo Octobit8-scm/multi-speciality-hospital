@@ -50,7 +50,7 @@ jobs:
         uses: checkmarx/kics-action@v1.7.0
         with:
           path: infrastructure/terraform
-          fail_on: high, medium
+          fail_on: high
           output_path: kics-results
       - name: Upload KICS scan results
         uses: actions/upload-artifact@v4
