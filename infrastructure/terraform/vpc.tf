@@ -1,4 +1,3 @@
-# kics-scan ignore-block
 resource "aws_vpc" "msh" {
   cidr_block = "10.0.0.0/16"
 
@@ -122,7 +121,9 @@ resource "aws_route_table_association" "msh-private-rt-assoc" {
 }
 
 resource "aws_security_group" "msh_public_sg" {
-  vpc_id = aws_vpc.msh.id
+  vpc_id      = aws_vpc.msh.id
+  name        = "msh-public-sg"
+  description = "Security group for public subnet in MSH VPC"
 
   ingress {
     description = "Allow HTTP from anywhere"
@@ -179,24 +180,6 @@ resource "aws_flow_log" "vpc_flow_log" {
   }
 }
 
-resource "aws_iam_role" "vpc_flow_log_role" {
-  name = "vpc_flow_log_role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "vpc-flow-logs.amazonaws.com"
-      }
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "vpc_flow_log_role_attachment" {
-  role       = aws_iam_role.vpc_flow_log_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
-}
 
 resource "aws_networkfirewall_firewall_policy" "msh_nfw_policy" {
   name = "msh-nfw-policy"

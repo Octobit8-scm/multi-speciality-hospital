@@ -69,3 +69,22 @@ resource "aws_ecr_repository_policy" "msh_ecr_repo_policy" {
   repository = aws_ecr_repository.msh_ecr_repo.name
   policy     = data.aws_iam_policy_document.ecr_policy.json
 }
+
+resource "aws_iam_role" "vpc_flow_log_role" {
+  name = "vpc_flow_log_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "vpc-flow-logs.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_flow_log_role_attachment" {
+  role       = aws_iam_role.vpc_flow_log_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+}
