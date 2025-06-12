@@ -21,7 +21,7 @@ resource "aws_ecr_repository" "msh_ecr_repo" {
     project     = "multi_speciality_hospital"
     owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "ecr_repository"
+    Type        = "ecr-repository"
   }
   # The ECR repository is dependent on the VPC and subnets being created
   depends_on   = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
@@ -34,12 +34,12 @@ resource "aws_cloudwatch_log_group" "ecs_log_group" {
   retention_in_days = 14
   kms_key_id        = aws_kms_key.cw_logs.arn
   tags = {
-    Name        = "msh_ecs_log_group"
+    Name        = "msh-ecs-log-group"
     Environment = "development"
-    project     = "multi_speciality_hospital"
-    owner       = "devops_team"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "cloudwatch_log_group"
+    Type        = "cloudwatch-log-group"
   }
 }
 
@@ -47,18 +47,18 @@ resource "aws_cloudwatch_log_group" "ecs_log_group" {
 resource "aws_ecs_cluster" "msh_ecs_cluster" {
   # This resource creates an ECS cluster for the Multi-Speciality Hospital project
   # It is used to manage and run containerized applications
-  name = "msh_ecs_cluster"
+  name = "msh-ecs-cluster"
   setting {
     name  = "containerInsights"
     value = "enabled"
   }
   tags = {
-    Name        = "msh_ecs_cluster"
+    Name        = "msh-ecs-cluster"
     Environment = "development"
-    project     = "multi_speciality_hospital"
-    owner       = "devops_team"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "ecs_cluster"
+    Type        = "ecs-cluster"
   }
   # The ECS cluster is dependent on the VPC and subnets being created
   depends_on = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
@@ -80,8 +80,8 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
       essential = true
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
+          containerPort = 3000
+          hostPort      = 3000
           protocol      = "tcp"
         }
       ]
@@ -99,8 +99,8 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
   tags = {
     Name        = "msh-ecs-task"
     Environment = "development"
-    project     = "multi_speciality_hospital"
-    owner       = "devops_team"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-task-definition"
   }
@@ -120,17 +120,17 @@ resource "aws_lb" "msh_alb" {
   tags = {
     Name        = "msh-alb"
     Environment = "development"
-    project     = "multi_speciality_hospital"
-    owner       = "devops_team"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "application_load_balancer"
+    Type        = "application-load-balancer"
   }
 }
 
 # kics-scan ignore-block
 resource "aws_lb_target_group" "msh-alb-tg" {
   name        = "msh-alb-tg"
-  port        = 80
+  port        = 3000
   protocol    = "HTTP"
   vpc_id      = aws_vpc.msh.id
   target_type = "ip"
@@ -148,8 +148,8 @@ resource "aws_lb_target_group" "msh-alb-tg" {
   tags = {
     Name        = "msh-alb-tg"
     Environment = "development"
-    project     = "multi_speciality_hospital"
-    owner       = "devops_team"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "alb-target-group"
   }
@@ -158,8 +158,8 @@ resource "aws_lb_target_group" "msh-alb-tg" {
 # kics-scan ignore-block
 resource "aws_lb_listener" "msh-alb-listener" {
   load_balancer_arn = aws_lb.msh_alb.arn
-  port              = 443
-  protocol          = "HTTPS"
+  port              = 80 # or 443 for HTTPS
+  protocol          = "HTTP"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = var.alb_certificate_arn
 
@@ -188,14 +188,14 @@ resource "aws_ecs_service" "msh-ecs-service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.msh-alb-tg.arn
     container_name   = "msh-container"
-    container_port   = 80
+    container_port   = 3000
   }
 
   tags = {
     Name        = "msh-ecs-service"
     Environment = "development"
-    project     = "multi_speciality_hospital"
-    owner       = "devops_team"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-service"
   }
@@ -246,8 +246,8 @@ resource "aws_wafv2_web_acl" "msh_waf" {
   tags = {
     name        = "msh_waf"
     environment = "development"
-    project     = "multi_speciality_hospital"
-    owner       = "devops_team"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
     type        = "waf"
   }
@@ -265,12 +265,12 @@ resource "aws_kms_key" "ecr" {
   deletion_window_in_days = 7
   enable_key_rotation     = true
   tags = {
-    Name        = "ecr_kms_key"
+    Name        = "ecr-kms-key"
     Environment = "development"
-    project     = "multi_speciality_hospital"
-    owner       = "devops_team"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "kms_key"
+    Type        = "kms-key"
   }
 }
 
