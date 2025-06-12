@@ -239,7 +239,7 @@ EOF
 }
 
 resource "aws_networkfirewall_firewall" "msh_nfw" {
-  name                = "msh_nfw"
+  name                = "msh-nfw"
   firewall_policy_arn = aws_networkfirewall_firewall_policy.msh_nfw_policy.arn
   vpc_id              = aws_vpc.msh.id
   subnet_mapping {
