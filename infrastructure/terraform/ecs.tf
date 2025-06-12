@@ -1,17 +1,10 @@
-# kics-scan ignore-block
-# kics-scan ignore-block
 resource "aws_ecr_repository" "msh_ecr_repo" {
-  # This resource creates an ECR repository for the Multi-Speciality Hospital project
-  # It is used to store Docker images for the ECS services
   name                 = "msh-ecr-repo"
   image_tag_mutability = "MUTABLE"
-  # Setting image_tag_mutability to "MUTABLE" allows overwriting images with the same tag
   encryption_configuration {
     encryption_type = "KMS"
     kms_key         = aws_kms_key.ecr.arn
   }
-  # Enabling image scanning on push to ensure security best practices
-  # This will scan images for vulnerabilities when they are pushed to the repository
   image_scanning_configuration {
     scan_on_push = true
   }
@@ -23,12 +16,10 @@ resource "aws_ecr_repository" "msh_ecr_repo" {
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecr-repository"
   }
-  # The ECR repository is dependent on the VPC and subnets being created
   depends_on   = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
   force_delete = true
 }
 
-# kics-scan ignore-block
 resource "aws_cloudwatch_log_group" "ecs_log_group" {
   name              = "/ecs/msh-ecs-cluster"
   retention_in_days = 14
@@ -43,10 +34,7 @@ resource "aws_cloudwatch_log_group" "ecs_log_group" {
   }
 }
 
-# kics-scan ignore-block
 resource "aws_ecs_cluster" "msh_ecs_cluster" {
-  # This resource creates an ECS cluster for the Multi-Speciality Hospital project
-  # It is used to manage and run containerized applications
   name = "msh-ecs-cluster"
   setting {
     name  = "containerInsights"
@@ -60,12 +48,10 @@ resource "aws_ecs_cluster" "msh_ecs_cluster" {
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-cluster"
   }
-  # The ECS cluster is dependent on the VPC and subnets being created
   depends_on = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
 }
+
 resource "aws_ecs_task_definition" "msh-ecs-task" {
-  # This resource defines the ECS task for the Multi-Speciality Hospital project
-  # It specifies the Docker image and container settings for the ECS service
   family                   = "msh-ecs-task"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -104,75 +90,10 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-task-definition"
   }
-  # The ECS task definition is dependent on the ECR repository being created
   depends_on = [aws_ecr_repository.msh_ecr_repo]
 }
 
-# kics-scan ignore-block
-resource "aws_lb" "msh_alb" {
-  name                       = "msh-alb"
-  internal                   = false
-  load_balancer_type         = "application"
-  security_groups            = [aws_security_group.msh_public_sg.id]
-  subnets                    = [aws_subnet.msh-public.id, aws_subnet.msh-public-2.id]
-  enable_deletion_protection = true
-  drop_invalid_header_fields = true
-  tags = {
-    Name        = "msh-alb"
-    Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
-    email       = "abhishek.srivastava@octobit8.com"
-    Type        = "application-load-balancer"
-  }
-}
-
-# kics-scan ignore-block
-resource "aws_lb_target_group" "msh-alb-tg" {
-  name        = "msh-alb-tg"
-  port        = 3000
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.msh.id
-  target_type = "ip"
-
-  health_check {
-    path                = "/"
-    protocol            = "HTTP"
-    matcher             = "200-399"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
-
-  tags = {
-    Name        = "msh-alb-tg"
-    Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
-    email       = "abhishek.srivastava@octobit8.com"
-    Type        = "alb-target-group"
-  }
-}
-
-# kics-scan ignore-block
-resource "aws_lb_listener" "msh-alb-listener" {
-  load_balancer_arn = aws_lb.msh_alb.arn
-  port              = 80 # or 443 for HTTPS
-  protocol          = "HTTP"
-  #ssl_policy        = "ELBSecurityPolicy-2016-08"
-  #certificate_arn = var.alb_certificate_arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.msh-alb-tg.arn
-  }
-}
-
-# kics-scan ignore-block
 resource "aws_ecs_service" "msh-ecs-service" {
-  # This resource creates an ECS service for the Multi-Speciality Hospital project
-  # It runs the ECS task on the specified cluster and subnets
   name            = "msh-ecs-service"
   cluster         = aws_ecs_cluster.msh_ecs_cluster.id
   task_definition = aws_ecs_task_definition.msh-ecs-task.arn
@@ -199,11 +120,7 @@ resource "aws_ecs_service" "msh-ecs-service" {
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-service"
   }
-  # The ECS service is dependent on the ECS cluster and task definition being created
   depends_on = [aws_lb_listener.msh-alb-listener, aws_ecs_cluster.msh_ecs_cluster, aws_ecs_task_definition.msh-ecs-task]
-  # The service will run the task in the public subnet with the specified security group
-  # This allows the service to be accessible from the internet
-  # The security group allows inbound traffic on port 80 (HTTP) from anywhere
   lifecycle {
     ignore_changes = [
       network_configuration[0].security_groups,
@@ -212,7 +129,6 @@ resource "aws_ecs_service" "msh-ecs-service" {
   }
 }
 
-# kics-scan ignore-block
 resource "aws_wafv2_web_acl" "msh_waf" {
   name        = "msh_waf"
   description = "WAF for ALB"
@@ -253,13 +169,11 @@ resource "aws_wafv2_web_acl" "msh_waf" {
   }
 }
 
-# kics-scan ignore-block
 resource "aws_wafv2_web_acl_association" "msh_waf_alb_assoc" {
   resource_arn = aws_lb.msh_alb.arn
   web_acl_arn  = aws_wafv2_web_acl.msh_waf.arn
 }
 
-# kics-scan ignore-block
 resource "aws_kms_key" "ecr" {
   description             = "KMS key for ECR encryption"
   deletion_window_in_days = 7
@@ -271,39 +185,6 @@ resource "aws_kms_key" "ecr" {
     owner       = "devops-team"
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "kms-key"
-  }
-}
-
-# kics-scan ignore-block
-resource "aws_ecr_repository_policy" "msh_ecr_repo_policy" {
-  repository = aws_ecr_repository.msh_ecr_repo.name
-  policy     = data.aws_iam_policy_document.ecr_policy.json
-}
-
-data "aws_iam_policy_document" "ecr_policy" {
-  statement {
-    sid    = "AllowPushPull"
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:PutImage",
-      "ecr:InitiateLayerUpload",
-      "ecr:UploadLayerPart",
-      "ecr:CompleteLayerUpload",
-      "ecr:DescribeRepositories",
-      "ecr:GetRepositoryPolicy",
-      "ecr:ListImages",
-      "ecr:DeleteRepository",
-      "ecr:BatchDeleteImage",
-      "ecr:SetRepositoryPolicy",
-      "ecr:DeleteRepositoryPolicy"
-    ]
   }
 }
 

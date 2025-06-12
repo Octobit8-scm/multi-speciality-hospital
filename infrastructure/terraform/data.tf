@@ -1,5 +1,3 @@
-# kics-scan ignore-block
-
 data "aws_region" "current" {}
 
 data "aws_caller_identity" "current" {}
@@ -43,5 +41,32 @@ EOF
     owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
     type        = "kms_key"
+  }
+}
+
+data "aws_iam_policy_document" "ecr_policy" {
+  statement {
+    sid    = "AllowPushPull"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload",
+      "ecr:DescribeRepositories",
+      "ecr:GetRepositoryPolicy",
+      "ecr:ListImages",
+      "ecr:DeleteRepository",
+      "ecr:BatchDeleteImage",
+      "ecr:SetRepositoryPolicy",
+      "ecr:DeleteRepositoryPolicy"
+    ]
   }
 }

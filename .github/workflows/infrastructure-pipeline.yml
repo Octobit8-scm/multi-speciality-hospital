@@ -2,6 +2,12 @@ name: multi-speciality-hospital infrastructure CI
 
 on:
   workflow_call:
+    inputs:
+      destroy:
+        description: "Set to true to destroy resources instead of applying changes"
+        required: false
+        default: "false"
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -9,10 +15,12 @@ on:
         required: true
       MSH_TERRAFORM_STATE_BUCKET:
         required: true
-
+      MSH_TERRAFORM_STATE_LOCK_TABLE:
+        required: true
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -27,7 +35,7 @@ jobs:
           aws s3api create-bucket --bucket ${{ env.BUCKET_NAME }} --region us-east-1
       - name: Create DynamoDB table for terraform state locking if it does not exist
         env:
-          LOCK_TABLE_NAME: msh-terraform-lock-table-dev
+          LOCK_TABLE_NAME: ${{ secrets.MSH_TERRAFORM_STATE_LOCK_TABLE }}
         run: |
           if ! aws dynamodb describe-table --table-name ${{ env.LOCK_TABLE_NAME }} > /dev/null 2>&1; then
             aws dynamodb create-table \
@@ -38,26 +46,35 @@ jobs:
           fi
       - name: checkout repository
         uses: actions/checkout@v2
-      # - name: Run KICS scan on Terraform
-      #   uses: checkmarx/kics-action@v1.7.0
-      #   with:
-      #     path: infrastructure/terraform
-      #     fail_on: high
-      #     output_path: kics-results
-      # - name: Upload KICS scan results
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: kics-results
-      #     path: kics-results
-      - name: Set up Terraform
+      - name: Run KICS scan on Terraform
+        uses: checkmarx/kics-action@v1.7.0
+        with:
+          path: infrastructure/terraform
+          fail_on: high
+          output_path: kics-results
+      - name: Upload KICS scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: kics-results
+          path: kics-results
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.5.0
-      - name: Run terraform
+      - name: Terraform Init, Fmt, Validate, Plan, and Apply
+        working-directory: infrastructure/terraform
         run: |
-          cd infrastructure/terraform
           terraform init
           terraform fmt -check
           terraform validate
           terraform plan -lock=false
           terraform apply -auto-approve
+      - name: Terraform Destroy
+        if: ${{ inputs.destroy == 'true' }}
+        working-directory: infrastructure/terraform
+        run: |
+          terraform init
+          terraform fmt -check
+          terraform validate
+          terraform plan -destroy -lock=false
+          terraform destroy -auto-approve

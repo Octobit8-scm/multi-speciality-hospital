@@ -1,5 +1,3 @@
-# kics-scan ignore-block
-
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "msh-ecs-task-execution-role"
 
@@ -66,3 +64,8 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_kms_decrypt" {
 #     type        = "access_analyzer"
 #   }
 # }
+
+resource "aws_ecr_repository_policy" "msh_ecr_repo_policy" {
+  repository = aws_ecr_repository.msh_ecr_repo.name
+  policy     = data.aws_iam_policy_document.ecr_policy.json
+}
