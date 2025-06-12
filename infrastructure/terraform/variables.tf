@@ -14,3 +14,8 @@ variable "alb_certificate_arn" {
   description = "The ARN of the ACM certificate for the ALB HTTPS listener."
   type        = string
 }
+
+variable "ecr_kms_key_arn" {
+  description = "ARN of the KMS key used to encrypt the ECR repository."
+  type        = string
+}

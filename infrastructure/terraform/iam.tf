@@ -31,6 +31,29 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_policy" "ecs_task_execution_kms_decrypt" {
+  name        = "msh-ecs-task-execution-kms-decrypt"
+  description = "Allow ECS task execution role to decrypt ECR images with KMS key"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:DescribeKey"
+        ]
+        Resource = var.ecr_kms_key_arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_kms_decrypt" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ecs_task_execution_kms_decrypt.arn
+}
+
 # resource "aws_accessanalyzer_analyzer" "main" {
 #   analyzer_name = "main"
 #   type          = "ACCOUNT"
