@@ -32,7 +32,15 @@ jobs:
         env:
           BUCKET_NAME: ${{ vars.MSH_TERRAFORM_STATE_BUCKET }}
         run: |
-          aws s3api create-bucket --bucket ${{ env.BUCKET_NAME }} --region ap-south-1
+          if ! aws s3api head-bucket --bucket ${{ env.BUCKET_NAME }} 2>/dev/null; then
+            echo "Bucket does not exist, creating it now..."
+            # Create the bucket if it does not exist
+            aws s3api create-bucket --bucket ${{ env.BUCKET_NAME }} --region ap-south-1 --create-bucket-configuration LocationConstraint=ap-south-1
+          else
+            echo "Bucket already exists, skipping creation."
+            exit 0
+          fi
+
       - name: Create DynamoDB table for terraform state locking if it does not exist
         env:
           LOCK_TABLE_NAME: ${{ vars.MSH_TERRAFORM_STATE_LOCK_TABLE }}
