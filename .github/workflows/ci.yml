@@ -4,7 +4,7 @@ on:
   push:
     branches: ["master", "development", "MSH*"]
   pull_request:
-    branches: ["master", "development"]
+    branches: ["development"]
     types: [opened, synchronize, reopened]
 
 jobs:
