@@ -3,6 +3,11 @@ name: multi-speciality-hospital CI/CD
 on:
   push:
     branches: ["master", "development", "MSH*"]
+  pull_request:
+    branches: ["master", "development", "MSH*"]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0" # Every Sunday at midnight
 
 jobs:
   build:
