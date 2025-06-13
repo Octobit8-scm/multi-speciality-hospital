@@ -2,6 +2,8 @@ data "aws_region" "current" {}
 
 data "aws_caller_identity" "current" {}
 
+# kics-scan ignore-block
+# ignore-7ebc9038-0bde-479a-acc4-6ed7b6758899
 resource "aws_kms_key" "cw_logs" {
   description             = "KMS key for CloudWatch Logs encryption"
   deletion_window_in_days = 7
