@@ -3,9 +3,6 @@ name: multi-speciality-hospital CI/CD
 on:
   push:
     branches: ["master", "development", "MSH*"]
-  pull_request:
-    branches: ["development"]
-    types: [opened, synchronize, reopened]
 
 jobs:
   build:
