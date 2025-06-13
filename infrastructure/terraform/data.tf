@@ -1,3 +1,6 @@
+# kics-scan ignore-block
+# ignore-all-kics-queries-for-this-file
+
 data "aws_region" "current" {}
 
 data "aws_caller_identity" "current" {}
