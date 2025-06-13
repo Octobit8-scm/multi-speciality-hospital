@@ -13,11 +13,10 @@ resource "aws_vpc" "msh" {
   instance_tenancy     = "default"
 }
 
-resource "aws_subnet" "msh-public" {
-  vpc_id                  = aws_vpc.msh.id
-  cidr_block              = "10.0.1.0/24" # Public subnet in 10.0.0.0/16
-  availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
+resource "aws_subnet" "msh_public" {
+  vpc_id            = aws_vpc.msh.id
+  cidr_block        = "10.0.1.0/24" # Public subnet in 10.0.0.0/16
+  availability_zone = "us-east-1a"
   tags = {
     Name        = "msh-public-subnet"
     Environment = "development"
@@ -28,7 +27,21 @@ resource "aws_subnet" "msh-public" {
   }
 }
 
-resource "aws_subnet" "msh-private" {
+resource "aws_subnet" "msh_public_2" {
+  vpc_id            = aws_vpc.msh.id
+  cidr_block        = "10.0.3.0/24" # Second public subnet in 10.0.0.0/16
+  availability_zone = "us-east-1b"
+  tags = {
+    Name        = "msh-public-subnet-2"
+    Environment = "development"
+    project     = "multi-speciality-hospital"
+    owner       = "devops-team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "public"
+  }
+}
+
+resource "aws_subnet" "msh_private" {
   vpc_id            = aws_vpc.msh.id
   cidr_block        = "10.0.2.0/24" # Private subnet in 10.0.0.0/16
   availability_zone = "us-east-1a"
@@ -42,7 +55,7 @@ resource "aws_subnet" "msh-private" {
   }
 }
 
-resource "aws_internet_gateway" "msh-vpc-ig" {
+resource "aws_internet_gateway" "msh_vpc_ig" {
   vpc_id = aws_vpc.msh.id
 
   tags = {
@@ -58,12 +71,12 @@ resource "aws_internet_gateway" "msh-vpc-ig" {
   depends_on = [aws_vpc.msh]
 }
 
-resource "aws_route_table" "msh-public-rt" {
+resource "aws_route_table" "msh_public_rt" {
   vpc_id = aws_vpc.msh.id
 
   route {
-    cidr_block = "10.0.1.0/24"
-    gateway_id = aws_internet_gateway.msh-vpc-ig.id
+    cidr_block = "0.0.0.0/0" # Route all outbound traffic to the internet
+    gateway_id = aws_internet_gateway.msh_vpc_ig.id
   }
   tags = {
     Name        = "msh-public-rt"
@@ -75,20 +88,19 @@ resource "aws_route_table" "msh-public-rt" {
   }
 }
 
-resource "aws_route_table_association" "msh-public-rt-assoc" {
-  subnet_id      = aws_subnet.msh-public.id
-  route_table_id = aws_route_table.msh-public-rt.id
-  depends_on     = [aws_route_table.msh-public-rt]
+resource "aws_route_table_association" "msh_public_rt_assoc" {
+  subnet_id      = aws_subnet.msh_public.id
+  route_table_id = aws_route_table.msh_public_rt.id
+  depends_on     = [aws_route_table.msh_public_rt]
 }
 
-resource "aws_internet_gateway_attachment" "msh-vpc-ig-attachment" {
-  vpc_id              = aws_vpc.msh.id
-  internet_gateway_id = aws_internet_gateway.msh-vpc-ig.id
-
-  depends_on = [aws_internet_gateway.msh-vpc-ig]
+resource "aws_route_table_association" "msh_public_rt_assoc_2" {
+  subnet_id      = aws_subnet.msh_public_2.id
+  route_table_id = aws_route_table.msh_public_rt.id
+  depends_on     = [aws_route_table.msh_public_rt]
 }
 
-resource "aws_route_table" "msh-private-rt" {
+resource "aws_route_table" "msh_private_rt" {
   vpc_id = aws_vpc.msh.id
 
   tags = {
@@ -100,41 +112,109 @@ resource "aws_route_table" "msh-private-rt" {
     Type        = "private-route-table"
   }
 }
-resource "aws_route_table_association" "msh-private-rt-assoc" {
-  subnet_id      = aws_subnet.msh-private.id
-  route_table_id = aws_route_table.msh-private-rt.id
-  depends_on     = [aws_route_table.msh-private-rt]
+resource "aws_route_table_association" "msh_private_rt_assoc" {
+  subnet_id      = aws_subnet.msh_private.id
+  route_table_id = aws_route_table.msh_private_rt.id
+  depends_on     = [aws_route_table.msh_private_rt]
 }
 
-resource "aws_security_group" "msh-public-sg" {
-  vpc_id = aws_vpc.msh.id
+resource "aws_security_group" "msh_public_sg" {
+  vpc_id      = aws_vpc.msh.id
+  name        = "msh-public-sg"
+  description = "Security group for public subnet in MSH VPC"
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"] # Allow HTTP traffic from the public subnet
-  }
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"] # Allow SSH traffic from the public subnet
-  }
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"          # Allow all outbound traffic
-    cidr_blocks = ["0.0.0.0/0"] # Allow all outbound traffic
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name        = "msh-public-sg"
+    Name        = "msh_public_sg"
     Environment = "development"
-    project     = "multi-speciality-hospital"
-    owner       = "devops-team"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
     email       = "abhishek.srivastava@octobit8.com"
-    Type        = "public-security-group"
+    Type        = "public_security_group"
   }
   depends_on = [aws_vpc.msh]
+}
+
+resource "aws_flow_log" "vpc_flow_log" {
+  log_destination_type = "cloud-watch-logs"
+  log_destination      = aws_cloudwatch_log_group.ecs_log_group.arn
+  iam_role_arn         = aws_iam_role.vpc_flow_log_role.arn
+  vpc_id               = aws_vpc.msh.id
+  traffic_type         = "ALL"
+  tags = {
+    Name        = "vpc_flow_log"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "vpc_flow_log"
+  }
+}
+
+
+resource "aws_networkfirewall_firewall_policy" "msh_nfw_policy" {
+  name = "msh-nfw-policy"
+  firewall_policy {
+    stateless_default_actions          = ["aws:forward_to_sfe"]
+    stateless_fragment_default_actions = ["aws:forward_to_sfe"]
+    stateful_rule_group_reference {
+      resource_arn = aws_networkfirewall_rule_group.msh_nfw_rule_group.arn
+    }
+  }
+  tags = {
+    Name        = "msh_nfw_policy"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "network_firewall_policy"
+  }
+}
+
+resource "aws_networkfirewall_rule_group" "msh_nfw_rule_group" {
+  capacity = 100
+  name     = "msh-nfw-rule-group"
+  type     = "STATEFUL"
+  rule_group {
+    rules_source {
+      rules_string = <<EOF
+pass tcp any any -> any any (sid:1; rev:1;)
+EOF
+    }
+  }
+  tags = {
+    Name        = "msh-nfw-rule-group"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "network_firewall_rule_group"
+  }
+}
+
+resource "aws_networkfirewall_firewall" "msh_nfw" {
+  name                = "msh-nfw"
+  firewall_policy_arn = aws_networkfirewall_firewall_policy.msh_nfw_policy.arn
+  vpc_id              = aws_vpc.msh.id
+  subnet_mapping {
+    subnet_id = aws_subnet.msh_public.id
+  }
+  subnet_mapping {
+    subnet_id = aws_subnet.msh_public_2.id
+  }
+  tags = {
+    Name        = "msh_nfw"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "network_firewall"
+  }
 }
 

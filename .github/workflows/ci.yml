@@ -1,11 +1,13 @@
-name: multi-speciality-hospital CI
+name: multi-speciality-hospital CI/CD
 
 on:
   push:
-    branches: ["development", "MSH*"]
+    branches: ["master", "development", "MSH*"]
   pull_request:
-    branches: ["master", "development"]
-    types: [opened, synchronize, reopened]
+    branches: ["master", "development", "MSH*"]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0" # Every Sunday at midnight
 
 jobs:
   build:
@@ -31,10 +33,41 @@ jobs:
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  terraform-pipeline:
-    uses: ./.github/workflows/terraform-pipeline.yml
+  infrastructure-pipeline:
+    uses: ./.github/workflows/infrastructure-pipeline.yml
     needs: sonar-analysis
+    with:
+      destroy: false
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       MSH_TERRAFORM_STATE_BUCKET: ${{ secrets.MSH_TERRAFORM_STATE_BUCKET }}
+      MSH_TERRAFORM_STATE_LOCK_TABLE: ${{ secrets.MSH_TERRAFORM_STATE_LOCK_TABLE }}
+
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    needs: infrastructure-pipeline
+    environment: dev
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Get ECR repository URI
+        id: ecr-uri
+        run: |
+          URI=$(aws ecr describe-repositories --repository-names msh-ecr-repo --region ap-south-1 --query 'repositories[0].repositoryUri' --output text)
+          echo "ECR_URI=$URI" >> $GITHUB_ENV
+      - name: Build Docker image
+        run: |
+          docker build -t $ECR_URI:latest .
+      - name: Push Docker image to ECR
+        run: |
+          docker push $ECR_URI:latest
