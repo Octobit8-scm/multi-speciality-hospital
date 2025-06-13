@@ -21,7 +21,7 @@ resource "aws_kms_key" "cw_logs" {
     {
       "Sid": "AllowCloudWatchLogs",
       "Effect": "Allow",
-      "Principal": {"Service": "logs.${data.aws_region.current.name}.amazonaws.com"},
+      "Principal": {"Service": "logs.amazonaws.com"},
       "Action": [
         "kms:Encrypt",
         "kms:Decrypt",
