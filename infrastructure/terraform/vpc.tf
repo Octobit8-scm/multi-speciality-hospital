@@ -13,7 +13,7 @@ resource "aws_vpc" "msh" {
   instance_tenancy     = "default"
 }
 
-resource "aws_subnet" "msh-public" {
+resource "aws_subnet" "msh_public" {
   vpc_id            = aws_vpc.msh.id
   cidr_block        = "10.0.1.0/24" # Public subnet in 10.0.0.0/16
   availability_zone = "us-east-1a"
@@ -27,7 +27,7 @@ resource "aws_subnet" "msh-public" {
   }
 }
 
-resource "aws_subnet" "msh-public-2" {
+resource "aws_subnet" "msh_public_2" {
   vpc_id            = aws_vpc.msh.id
   cidr_block        = "10.0.3.0/24" # Second public subnet in 10.0.0.0/16
   availability_zone = "us-east-1b"
@@ -41,7 +41,7 @@ resource "aws_subnet" "msh-public-2" {
   }
 }
 
-resource "aws_subnet" "msh-private" {
+resource "aws_subnet" "msh_private" {
   vpc_id            = aws_vpc.msh.id
   cidr_block        = "10.0.2.0/24" # Private subnet in 10.0.0.0/16
   availability_zone = "us-east-1a"
@@ -55,7 +55,7 @@ resource "aws_subnet" "msh-private" {
   }
 }
 
-resource "aws_internet_gateway" "msh-vpc-ig" {
+resource "aws_internet_gateway" "msh_vpc_ig" {
   vpc_id = aws_vpc.msh.id
 
   tags = {
@@ -71,7 +71,7 @@ resource "aws_internet_gateway" "msh-vpc-ig" {
   depends_on = [aws_vpc.msh]
 }
 
-resource "aws_route_table" "msh-public-rt" {
+resource "aws_route_table" "msh_public_rt" {
   vpc_id = aws_vpc.msh.id
 
   route {
@@ -88,19 +88,19 @@ resource "aws_route_table" "msh-public-rt" {
   }
 }
 
-resource "aws_route_table_association" "msh-public-rt-assoc" {
-  subnet_id      = aws_subnet.msh-public.id
-  route_table_id = aws_route_table.msh-public-rt.id
-  depends_on     = [aws_route_table.msh-public-rt]
+resource "aws_route_table_association" "msh_public_rt_assoc" {
+  subnet_id      = aws_subnet.msh_public.id
+  route_table_id = aws_route_table.msh_public_rt.id
+  depends_on     = [aws_route_table.msh_public_rt]
 }
 
-resource "aws_route_table_association" "msh-public-rt-assoc-2" {
-  subnet_id      = aws_subnet.msh-public-2.id
-  route_table_id = aws_route_table.msh-public-rt.id
-  depends_on     = [aws_route_table.msh-public-rt]
+resource "aws_route_table_association" "msh_public_rt_assoc_2" {
+  subnet_id      = aws_subnet.msh_public_2.id
+  route_table_id = aws_route_table.msh_public_rt.id
+  depends_on     = [aws_route_table.msh_public_rt]
 }
 
-resource "aws_route_table" "msh-private-rt" {
+resource "aws_route_table" "msh_private_rt" {
   vpc_id = aws_vpc.msh.id
 
   tags = {
@@ -112,10 +112,10 @@ resource "aws_route_table" "msh-private-rt" {
     Type        = "private-route-table"
   }
 }
-resource "aws_route_table_association" "msh-private-rt-assoc" {
-  subnet_id      = aws_subnet.msh-private.id
-  route_table_id = aws_route_table.msh-private-rt.id
-  depends_on     = [aws_route_table.msh-private-rt]
+resource "aws_route_table_association" "msh_private_rt_assoc" {
+  subnet_id      = aws_subnet.msh_private.id
+  route_table_id = aws_route_table.msh_private_rt.id
+  depends_on     = [aws_route_table.msh_private_rt]
 }
 
 resource "aws_security_group" "msh_public_sg" {

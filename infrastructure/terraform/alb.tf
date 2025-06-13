@@ -16,7 +16,7 @@ resource "aws_lb" "msh_alb" {
   }
 }
 
-resource "aws_lb_target_group" "msh-alb-tg" {
+resource "aws_lb_target_group" "msh_alb_tg" {
   name        = "msh_alb_tg"
   port        = 3000
   protocol    = "HTTP"
@@ -43,7 +43,7 @@ resource "aws_lb_target_group" "msh-alb-tg" {
   }
 }
 
-resource "aws_lb_listener" "msh-alb-listener" {
+resource "aws_lb_listener" "msh_alb_listener" {
   load_balancer_arn = aws_lb.msh_alb.arn
   port              = 443 # or 443 for HTTPS
   protocol          = "HTTPS"

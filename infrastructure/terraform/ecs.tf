@@ -51,7 +51,7 @@ resource "aws_ecs_cluster" "msh_ecs_cluster" {
   depends_on = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
 }
 
-resource "aws_ecs_task_definition" "msh-ecs-task" {
+resource "aws_ecs_task_definition" "msh_ecs_task" {
   family                   = "msh-ecs-task"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -93,7 +93,7 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
   depends_on = [aws_ecr_repository.msh_ecr_repo]
 }
 
-resource "aws_ecs_service" "msh-ecs-service" {
+resource "aws_ecs_service" "msh_ecs_service" {
   name            = "msh_ecs_service"
   cluster         = aws_ecs_cluster.msh_ecs_cluster.id
   task_definition = aws_ecs_task_definition.msh-ecs-task.arn
