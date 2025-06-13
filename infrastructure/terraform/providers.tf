@@ -11,12 +11,12 @@ provider "aws" {
   region = "ap-south-1"
 }
 
-#Configure S3 bucket for terraform state
+#Configure S3 bucket for terraform state management
 terraform {
   backend "s3" {
     bucket         = "msh-terraform-state-dev"
     key            = "terraform.tfstate"
     region         = "ap-south-1"
-    dynamodb_table = "msh-terraform-lock-table-dev"
+    dynamodb_table = "msh-terraform-state-lock-table-dev"
   }
 }
