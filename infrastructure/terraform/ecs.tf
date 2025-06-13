@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "msh_ecr_repo" {
-  name                 = "msh-ecr-repo"
+  name                 = "msh_ecr_repo"
   image_tag_mutability = "IMMUTABLE"
   encryption_configuration {
     encryption_type = "KMS"
@@ -35,7 +35,7 @@ resource "aws_cloudwatch_log_group" "ecs_log_group" {
 }
 
 resource "aws_ecs_cluster" "msh_ecs_cluster" {
-  name = "msh-ecs-cluster"
+  name = "msh_ecs_cluster"
   setting {
     name  = "containerInsights"
     value = "enabled"
@@ -94,7 +94,7 @@ resource "aws_ecs_task_definition" "msh-ecs-task" {
 }
 
 resource "aws_ecs_service" "msh-ecs-service" {
-  name            = "msh-ecs-service"
+  name            = "msh_ecs_service"
   cluster         = aws_ecs_cluster.msh_ecs_cluster.id
   task_definition = aws_ecs_task_definition.msh-ecs-task.arn
   desired_count   = 1

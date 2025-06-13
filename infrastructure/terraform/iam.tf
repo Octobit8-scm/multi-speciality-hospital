@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "msh-ecs-task-execution-role"
+  name = "msh_ecs_task_execution_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -30,7 +30,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
 }
 
 resource "aws_iam_policy" "ecs_task_execution_kms_decrypt" {
-  name        = "msh-ecs-task-execution-kms-decrypt"
+  name        = "msh_ecs_task_execution_kms_decrypt"
   description = "Allow ECS task execution role to decrypt ECR images with KMS key"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -45,6 +45,14 @@ resource "aws_iam_policy" "ecs_task_execution_kms_decrypt" {
       }
     ]
   })
+  tags = {
+    name        = "msh-ecs-task-execution-kms-decrypt"
+    environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    type        = "ecs_task_execution_kms_decrypt_policy"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_kms_decrypt" {
@@ -70,6 +78,7 @@ resource "aws_ecr_repository_policy" "msh_ecr_repo_policy" {
   policy     = data.aws_iam_policy_document.ecr_policy.json
 }
 
+
 resource "aws_iam_role" "vpc_flow_log_role" {
   name = "vpc_flow_log_role"
   assume_role_policy = jsonencode({
@@ -82,6 +91,14 @@ resource "aws_iam_role" "vpc_flow_log_role" {
       }
     }]
   })
+  tags = {
+    name        = "vpc_flow_log_role"
+    environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    type        = "iam_role"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "vpc_flow_log_role_attachment" {

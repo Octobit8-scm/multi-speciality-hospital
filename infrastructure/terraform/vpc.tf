@@ -14,10 +14,9 @@ resource "aws_vpc" "msh" {
 }
 
 resource "aws_subnet" "msh-public" {
-  vpc_id                  = aws_vpc.msh.id
-  cidr_block              = "10.0.1.0/24" # Public subnet in 10.0.0.0/16
-  availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
+  vpc_id            = aws_vpc.msh.id
+  cidr_block        = "10.0.1.0/24" # Public subnet in 10.0.0.0/16
+  availability_zone = "us-east-1a"
   tags = {
     Name        = "msh-public-subnet"
     Environment = "development"
@@ -29,10 +28,9 @@ resource "aws_subnet" "msh-public" {
 }
 
 resource "aws_subnet" "msh-public-2" {
-  vpc_id                  = aws_vpc.msh.id
-  cidr_block              = "10.0.3.0/24" # Second public subnet in 10.0.0.0/16
-  availability_zone       = "us-east-1b"
-  map_public_ip_on_launch = true
+  vpc_id            = aws_vpc.msh.id
+  cidr_block        = "10.0.3.0/24" # Second public subnet in 10.0.0.0/16
+  availability_zone = "us-east-1b"
   tags = {
     Name        = "msh-public-subnet-2"
     Environment = "development"
@@ -126,26 +124,13 @@ resource "aws_security_group" "msh_public_sg" {
   description = "Security group for public subnet in MSH VPC"
 
   ingress {
-    description = "Allow HTTP from anywhere"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
     description = "Allow HTTPS from anywhere"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  ingress {
-    description = "Allow SSH from public subnet"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"]
-  }
+
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
