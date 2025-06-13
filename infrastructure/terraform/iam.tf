@@ -52,18 +52,18 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_kms_decrypt" {
   policy_arn = aws_iam_policy.ecs_task_execution_kms_decrypt.arn
 }
 
-# resource "aws_accessanalyzer_analyzer" "main" {
-#   analyzer_name = "main"
-#   type          = "ACCOUNT"
-#   tags = {
-#     name        = "main_access_analyzer"
-#     environment = "development"
-#     project     = "multi_speciality_hospital"
-#     owner       = "devops_team"
-#     email       = "abhishek.srivastava@octobit8.com"
-#     type        = "access_analyzer"
-#   }
-# }
+resource "aws_accessanalyzer_analyzer" "main" {
+  analyzer_name = "main"
+  type          = "ACCOUNT"
+  tags = {
+    name        = "main_access_analyzer"
+    environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    type        = "access_analyzer"
+  }
+}
 
 resource "aws_ecr_repository_policy" "msh_ecr_repo_policy" {
   repository = aws_ecr_repository.msh_ecr_repo.name

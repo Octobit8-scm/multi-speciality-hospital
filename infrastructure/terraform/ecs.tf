@@ -1,6 +1,6 @@
 resource "aws_ecr_repository" "msh_ecr_repo" {
   name                 = "msh-ecr-repo"
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = "IMMUTABLE"
   encryption_configuration {
     encryption_type = "KMS"
     kms_key         = aws_kms_key.ecr.arn
