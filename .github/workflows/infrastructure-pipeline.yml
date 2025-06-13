@@ -27,12 +27,12 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ap-south-1
       - name: Create S3 bucket for remote terraform state with bucket name in envrionment variable
         env:
           BUCKET_NAME: ${{ vars.MSH_TERRAFORM_STATE_BUCKET }}
         run: |
-          aws s3api create-bucket --bucket ${{ env.BUCKET_NAME }} --region us-east-1
+          aws s3api create-bucket --bucket ${{ env.BUCKET_NAME }} --region ap-south-1
       - name: Create DynamoDB table for terraform state locking if it does not exist
         env:
           LOCK_TABLE_NAME: ${{ vars.MSH_TERRAFORM_STATE_LOCK_TABLE }}
