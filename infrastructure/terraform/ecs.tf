@@ -199,7 +199,8 @@ resource "aws_kms_key" "ecr" {
     {
       "Sid": "AllowContainerRegistry",
       "Effect": "Allow",
-      "Principal": {"Service": "ecr.${data.aws_region.current.name}.amazonaws.com"},
+
+      "Principal": {"Service": "ecr.amazonaws.com"},
       "Action": [
         "kms:Encrypt",
         "kms:Decrypt",

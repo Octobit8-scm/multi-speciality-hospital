@@ -15,13 +15,7 @@ resource "aws_kms_key" "cw_logs" {
       "Sid": "Enable IAM User Permissions",
       "Effect": "Allow",
       "Principal": {"AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"},
-      "Action": [
-          "kms:Encrypt",
-          "kms:Decrypt",
-          "kms:ReEncrypt*",
-          "kms:GenerateDataKey*",
-          "kms:DescribeKey"
-        ],
+      "Action": "kms:*",
       "Resource": "*"
     },
     {

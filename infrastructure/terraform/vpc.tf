@@ -16,7 +16,7 @@ resource "aws_vpc" "msh" {
 resource "aws_subnet" "msh_public" {
   vpc_id            = aws_vpc.msh.id
   cidr_block        = "10.0.1.0/24" # Public subnet in 10.0.0.0/16
-  availability_zone = "us-east-1a"
+  availability_zone = "ap-south-1a"
   tags = {
     Name        = "msh-public-subnet"
     Environment = "development"
@@ -30,7 +30,7 @@ resource "aws_subnet" "msh_public" {
 resource "aws_subnet" "msh_public_2" {
   vpc_id            = aws_vpc.msh.id
   cidr_block        = "10.0.3.0/24" # Second public subnet in 10.0.0.0/16
-  availability_zone = "us-east-1b"
+  availability_zone = "ap-south-1b"
   tags = {
     Name        = "msh-public-subnet-2"
     Environment = "development"
@@ -44,7 +44,7 @@ resource "aws_subnet" "msh_public_2" {
 resource "aws_subnet" "msh_private" {
   vpc_id            = aws_vpc.msh.id
   cidr_block        = "10.0.2.0/24" # Private subnet in 10.0.0.0/16
-  availability_zone = "us-east-1a"
+  availability_zone = "ap-south-1a"
   tags = {
     Name        = "msh-private-subnet"
     Environment = "development"
