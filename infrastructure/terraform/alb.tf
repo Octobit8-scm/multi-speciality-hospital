@@ -1,5 +1,5 @@
 resource "aws_lb" "msh_alb" {
-  name                       = "msh_alb"
+  name                       = "msh-alb"
   internal                   = false
   load_balancer_type         = "application"
   security_groups            = [aws_security_group.msh_public_sg.id]

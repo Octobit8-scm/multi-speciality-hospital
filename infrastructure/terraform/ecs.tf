@@ -48,7 +48,7 @@ resource "aws_ecs_cluster" "msh_ecs_cluster" {
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-cluster"
   }
-  depends_on = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
+  depends_on = [aws_vpc.msh, aws_subnet.msh_public, aws_subnet.msh_private]
 }
 
 resource "aws_ecs_task_definition" "msh_ecs_task" {
