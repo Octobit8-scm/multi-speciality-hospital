@@ -123,14 +123,6 @@ resource "aws_security_group" "msh_public_sg" {
   name        = "msh-public-sg"
   description = "Security group for public subnet in MSH VPC"
 
-  ingress {
-    description = "Allow HTTPS from anywhere"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
