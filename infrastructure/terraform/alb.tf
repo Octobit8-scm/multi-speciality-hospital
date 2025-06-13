@@ -52,6 +52,6 @@ resource "aws_lb_listener" "msh_alb_listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.msh-alb-tg.arn
+    target_group_arn = aws_lb_target_group.msh_alb_tg.arn
   }
 }

@@ -96,18 +96,18 @@ resource "aws_ecs_task_definition" "msh_ecs_task" {
 resource "aws_ecs_service" "msh_ecs_service" {
   name            = "msh_ecs_service"
   cluster         = aws_ecs_cluster.msh_ecs_cluster.id
-  task_definition = aws_ecs_task_definition.msh-ecs-task.arn
+  task_definition = aws_ecs_task_definition.msh_ecs_task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [aws_subnet.msh-public.id]
+    subnets          = [aws_subnet.msh_public.id]
     security_groups  = [aws_security_group.msh_public_sg.id]
     assign_public_ip = true
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.msh-alb-tg.arn
+    target_group_arn = aws_lb_target_group.msh_alb_tg.arn
     container_name   = "msh-container"
     container_port   = 3000
   }
@@ -120,7 +120,7 @@ resource "aws_ecs_service" "msh_ecs_service" {
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-service"
   }
-  depends_on = [aws_lb_listener.msh-alb-listener, aws_ecs_cluster.msh_ecs_cluster, aws_ecs_task_definition.msh-ecs-task]
+  depends_on = [aws_lb_listener.msh_alb_listener, aws_ecs_cluster.msh_ecs_cluster, aws_ecs_task_definition.msh_ecs_task]
   lifecycle {
     ignore_changes = [
       network_configuration[0].security_groups,
