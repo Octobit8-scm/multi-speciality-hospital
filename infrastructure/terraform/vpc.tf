@@ -76,7 +76,7 @@ resource "aws_route_table" "msh_public_rt" {
 
   route {
     cidr_block = "0.0.0.0/0" # Route all outbound traffic to the internet
-    gateway_id = aws_internet_gateway.msh-vpc-ig.id
+    gateway_id = aws_internet_gateway.msh_vpc_ig.id
   }
   tags = {
     Name        = "msh-public-rt"
@@ -203,10 +203,10 @@ resource "aws_networkfirewall_firewall" "msh_nfw" {
   firewall_policy_arn = aws_networkfirewall_firewall_policy.msh_nfw_policy.arn
   vpc_id              = aws_vpc.msh.id
   subnet_mapping {
-    subnet_id = aws_subnet.msh-public.id
+    subnet_id = aws_subnet.msh_public.id
   }
   subnet_mapping {
-    subnet_id = aws_subnet.msh-public-2.id
+    subnet_id = aws_subnet.msh_public_2.id
   }
   tags = {
     Name        = "msh_nfw"

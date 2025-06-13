@@ -16,7 +16,7 @@ resource "aws_ecr_repository" "msh_ecr_repo" {
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecr-repository"
   }
-  depends_on   = [aws_vpc.msh, aws_subnet.msh-public, aws_subnet.msh-private]
+  depends_on   = [aws_vpc.msh, aws_subnet.msh_public, aws_subnet.msh_private]
   force_delete = true
 }
 

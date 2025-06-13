@@ -3,7 +3,7 @@ resource "aws_lb" "msh_alb" {
   internal                   = false
   load_balancer_type         = "application"
   security_groups            = [aws_security_group.msh_public_sg.id]
-  subnets                    = [aws_subnet.msh-public.id, aws_subnet.msh-public-2.id]
+  subnets                    = [aws_subnet.msh_public.id, aws_subnet.msh_public_2.id]
   enable_deletion_protection = true
   drop_invalid_header_fields = true
   tags = {
@@ -17,7 +17,7 @@ resource "aws_lb" "msh_alb" {
 }
 
 resource "aws_lb_target_group" "msh_alb_tg" {
-  name        = "msh_alb_tg"
+  name        = "msh-alb-tg"
   port        = 3000
   protocol    = "HTTP"
   vpc_id      = aws_vpc.msh.id
