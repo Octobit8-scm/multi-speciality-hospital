@@ -178,6 +178,40 @@ resource "aws_kms_key" "ecr" {
   description             = "KMS key for ECR encryption"
   deletion_window_in_days = 7
   enable_key_rotation     = true
+  policy                  = <<EOF
+{
+  "Version": "2012-10-17",
+  "Id": "key-default-1",
+  "Statement": [
+    {
+      "Sid": "Enable IAM User Permissions",
+      "Effect": "Allow",
+      "Principal": {"AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"},
+      "Action": [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowContainerRegistry",
+      "Effect": "Allow",
+      "Principal": {"Service": "ecr.${data.aws_region.current.name}.amazonaws.com"},
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
   tags = {
     Name        = "ecr-kms-key"
     Environment = "development"
