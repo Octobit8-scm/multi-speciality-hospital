@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: ["master", "development", "MSH*"]
   workflow_dispatch:
+    inputs:
+      destroy:
+        description: "Set to true to destroy resources instead of applying changes"
+        required: false
+        default: "false"
+
   schedule:
     - cron: "0 0 * * 0" # Every Sunday at midnight
 
