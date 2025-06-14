@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
+ENV NEXT_DISABLE_FONT_DOWNLOADS=1
 RUN npm ci
 
 # Copy the rest of the application code
