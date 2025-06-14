@@ -63,7 +63,7 @@ jobs:
       - name: Get ECR repository URI
         id: ecr-uri
         run: |
-          URI=$(aws ecr describe-repositories --repository-names msh-ecr-repo --region ap-south-1 --query 'repositories[0].repositoryUri' --output text)
+          URI=$(aws ecr describe-repositories --repository-names msh_ecr_repo --region ap-south-1 --query 'repositories[0].repositoryUri' --output text)
           echo "ECR_URI=$URI" >> $GITHUB_ENV
       - name: Build Docker image
         run: |
