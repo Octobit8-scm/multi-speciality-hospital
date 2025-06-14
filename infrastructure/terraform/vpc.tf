@@ -173,6 +173,39 @@ resource "aws_security_group" "msh_ecs_service_sg" {
   depends_on = [aws_vpc.msh]
 }
 
+resource "aws_security_group" "msh_alb_sg" {
+  vpc_id      = aws_vpc.msh.id
+  name        = "msh-alb-sg"
+  description = "Security group for ALB in MSH VPC"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name        = "msh-alb-sg"
+    Environment = "development"
+    project     = "multi_speciality_hospital"
+    owner       = "devops_team"
+    email       = "abhishek.srivastava@octobit8.com"
+    Type        = "alb_security_group"
+  }
+}
+
 resource "aws_flow_log" "vpc_flow_log" {
   log_destination_type = "cloud-watch-logs"
   log_destination      = aws_cloudwatch_log_group.ecs_log_group.arn
