@@ -120,7 +120,12 @@ resource "aws_ecs_service" "msh_ecs_service" {
     email       = "abhishek.srivastava@octobit8.com"
     Type        = "ecs-service"
   }
-  depends_on = [aws_lb_listener.msh_alb_listener, aws_ecs_cluster.msh_ecs_cluster, aws_ecs_task_definition.msh_ecs_task]
+  depends_on = [
+    aws_lb_listener.http,
+    aws_lb_listener.https,
+    aws_ecs_cluster.msh_ecs_cluster,
+    aws_ecs_task_definition.msh_ecs_task
+  ]
   lifecycle {
     ignore_changes = [
       network_configuration[0].security_groups,
