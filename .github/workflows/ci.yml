@@ -77,13 +77,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $ECR_URI:${IMAGE_TAG} -t $ECR_URI:latest .
+          docker build -t $ECR_URI:${IMAGE_TAG} .
 
       - name: Push Docker image to ECR
         run: |
           docker push $ECR_URI:${IMAGE_TAG}
-          docker push $ECR_URI:latest
-
       - name: Terraform Apply with new image tag
         working-directory: infrastructure/terraform
         run: terraform apply -auto-approve -var="image_tag=${IMAGE_TAG}"
