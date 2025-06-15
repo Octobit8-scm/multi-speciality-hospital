@@ -62,7 +62,7 @@ resource "aws_ecs_task_definition" "msh_ecs_task" {
   container_definitions = jsonencode([
     {
       name      = "msh-container"
-      image     = "${aws_ecr_repository.msh_ecr_repo.repository_url}:latest"
+      image     = "${aws_ecr_repository.msh_ecr_repo.repository_url}:${var.image_tag}"
       essential = true
       portMappings = [
         {

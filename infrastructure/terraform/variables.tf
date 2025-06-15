@@ -19,3 +19,9 @@ variable "ecr_kms_key_arn" {
   description = "ARN of the KMS key used to encrypt the ECR repository."
   type        = string
 }
+
+variable "image_tag" {
+  description = "The tag of the Docker image to deploy."
+  type        = string
+  default     = "latest"
+}
